@@ -50,8 +50,13 @@ o_input = api.model('Input', {
 })
 
 o_output = api.model('Output', {
-    'name': fields.String(required=True, description='Input name'),
-    'type': fields.String(required=True, description='Input type'),
+    'name': fields.String(required=True, description='Output name'),
+    'type': fields.String(required=True, description='Output type'),
+})
+
+o_config = api.model('Config', {
+    'name': fields.String(required=True, description='Config name'),
+    'type': fields.String(required=True, description='Config type'),
 })
 
 operator_model = api.model('Operator', {
@@ -60,7 +65,8 @@ operator_model = api.model('Operator', {
     'description': fields.String(required=False, description='Description of the operator'),
     'pub': fields.Boolean(required=False),
     'inputs': fields.List(fields.Nested(o_input)),
-    'outputs': fields.List(fields.Nested(o_output))
+    'outputs': fields.List(fields.Nested(o_output)),
+    'config_values': fields.List(fields.Nested(o_config))
 })
 
 operator_return = operator_model.clone('Operator', {
