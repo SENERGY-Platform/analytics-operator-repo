@@ -64,6 +64,7 @@ operator_model = api.model('Operator', {
     'image': fields.String(required=False, description='Name of the associated docker image'),
     'description': fields.String(required=False, description='Description of the operator'),
     'pub': fields.Boolean(required=False),
+    'deploymentType': fields.String(required=False),
     'inputs': fields.List(fields.Nested(o_input)),
     'outputs': fields.List(fields.Nested(o_output)),
     'config_values': fields.List(fields.Nested(o_config))
