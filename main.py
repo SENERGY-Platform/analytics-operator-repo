@@ -21,6 +21,8 @@ from flask_cors import CORS
 import json
 from pymongo import MongoClient, ReturnDocument, ASCENDING, DESCENDING
 from dotenv import load_dotenv
+# flask restplus bug
+from werkzeug.utils import cached_property
 load_dotenv()
 
 app = Flask("analytics-operator-repo")
