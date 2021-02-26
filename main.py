@@ -20,9 +20,11 @@ from flask_restx import Api, Resource, fields, reqparse
 from flask_cors import CORS
 import json
 from pymongo import MongoClient, ReturnDocument, ASCENDING, DESCENDING
+import pymongo
 from dotenv import load_dotenv
 # flask restplus bug
 from werkzeug.utils import cached_property
+
 load_dotenv()
 
 app = Flask("analytics-operator-repo")
@@ -38,11 +40,11 @@ class Docs(Resource):
         return api.__schema__
 
 
-client = MongoClient(os.getenv('MONGO_ADDR', 'localhost'), 27017)
+client: pymongo.mongo_client.MongoClient = MongoClient(os.getenv('MONGO_ADDR', 'localhost'), 27017)
 
 db = client.db
 
-operators = db.operators
+operators: pymongo.collection.Collection = db.operators
 
 ns = api.namespace('operator', description='Operations related to operators')
 
@@ -119,16 +121,34 @@ class Operator(Resource):
 
         if not (args["search"] is None):
             if len(args["search"]) > 0:
-                ops = operators.find({'$and': [{'name': {"$regex": args["search"]}}, {'$or': [{'pub': True}, {'userId': user_id}]}]})\
-                    .skip(offset).limit(limit).sort("_id", 1).sort(sort[0], ASCENDING if sort[1] == "asc" else DESCENDING)
+                ops = operators.find(
+                    {'$and': [{'name': {"$regex": args["search"]}}, {'$or': [{'pub': True}, {'userId': user_id}]}]}) \
+                    .skip(offset).limit(limit).sort("_id", 1).sort(sort[0],
+                                                                   ASCENDING if sort[1] == "asc" else DESCENDING)
         else:
-            ops = operators.find({'$or': [{'pub': True}, {'userId': user_id}]})\
+            ops = operators.find({'$or': [{'pub': True}, {'userId': user_id}]}) \
                 .skip(offset).limit(limit).sort(sort[0], ASCENDING if sort[1] == "asc" else DESCENDING)
 
         operators_list = []
         for o in ops:
             operators_list.append(o)
         return {"operators": operators_list}
+
+    @api.expect(fields.List(fields.String()))
+    @api.response(204, "Deleted")
+    def delete(self):
+        """Deletes multiple operators."""
+        user_id = getUserId(request)
+        req = request.get_json()
+        ids = []
+        for id in req:
+            ids.append(ObjectId(id))
+        query = {'$and': [{'_id': {'$in': ids}}, {'userId': user_id}]}
+        ops = operators.count_documents(query)
+        if ops != len(req):
+            return "Operator not found", 404
+        operators.delete_many(query)
+        return "Deleted", 204
 
 
 @ns.route('/<string:operator_id>', strict_slashes=False)
@@ -150,7 +170,7 @@ class OperatorUpdate(Resource):
         operator = operators.find_one_and_update({'$and': [{'_id': ObjectId(operator_id)}, {'userId': user_id}]}, {
             '$set': req,
         },
-            return_document=ReturnDocument.AFTER)
+                                                 return_document=ReturnDocument.AFTER)
         if operator is not None:
             return operator, 200
         return "Operator not found", 404
