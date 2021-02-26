@@ -80,7 +80,8 @@ operator_return = operator_model.clone('Operator', {
 })
 
 operator_list = api.model('OperatorList', {
-    "operators": fields.List(fields.Nested(operator_return))
+    "operators": fields.List(fields.Nested(operator_return)),
+    "totalCount": fields.Integer(),
 })
 
 
@@ -121,18 +122,19 @@ class Operator(Resource):
 
         if not (args["search"] is None):
             if len(args["search"]) > 0:
-                ops = operators.find(
-                    {'$and': [{'name': {"$regex": args["search"]}}, {'$or': [{'pub': True}, {'userId': user_id}]}]}) \
+                query = {'$and': [{'name': {"$regex": args["search"]}}, {'$or': [{'pub': True}, {'userId': user_id}]}]}
+                ops = operators.find(query) \
                     .skip(offset).limit(limit).sort("_id", 1).sort(sort[0],
                                                                    ASCENDING if sort[1] == "asc" else DESCENDING)
         else:
-            ops = operators.find({'$or': [{'pub': True}, {'userId': user_id}]}) \
+            query = {'$or': [{'pub': True}, {'userId': user_id}]}
+            ops = operators.find(query) \
                 .skip(offset).limit(limit).sort(sort[0], ASCENDING if sort[1] == "asc" else DESCENDING)
 
         operators_list = []
         for o in ops:
             operators_list.append(o)
-        return {"operators": operators_list}
+        return {"operators": operators_list, "totalCount": operators.count_documents(query)}
 
     @api.expect(fields.List(fields.String()))
     @api.response(204, "Deleted")
