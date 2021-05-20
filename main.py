@@ -195,5 +195,11 @@ def getUserId(req):
     return user_id
 
 
-if __name__ == "__main__":
-    app.run("0.0.0.0", os.getenv('PORT', 5000), debug=False)
+if bool(os.getenv('DEBUG', '')):
+    if __name__ == "__main__":
+        app.run("0.0.0.0", os.getenv('PORT', 5000), debug=False)
+else:
+    if __name__ == "__main__":
+        from waitress import serve
+
+        serve(app, host="0.0.0.0", port=os.getenv('PORT', 5000))

@@ -5,3 +5,4 @@ marshmallow_jsonapi
 flask_cors
 python-dotenv
 flask-restx
+waitress
