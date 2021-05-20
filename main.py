@@ -16,6 +16,8 @@ import os
 
 from bson.objectid import ObjectId
 from flask import Flask, request
+import flask.scaffold
+flask.helpers._endpoint_from_view_func = flask.scaffold._endpoint_from_view_func
 from flask_restx import Api, Resource, fields, reqparse
 from flask_cors import CORS
 import json
