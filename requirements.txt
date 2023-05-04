@@ -1,7 +1,6 @@
 pymongo
-werkzeug==2.0.3
-flask==2.0.0
-flask_restx
+flask==2.3.0
+flask_restx==1.1.0
 marshmallow_jsonapi
 flask_cors
 python-dotenv
