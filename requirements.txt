@@ -1,5 +1,5 @@
 pymongo
-werkzeug==2.0.3
+werkzeug==2.2.3
 flask==2.0.0
 flask_restx
 marshmallow_jsonapi
