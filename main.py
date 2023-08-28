@@ -73,6 +73,7 @@ operator_model = api.model('Operator', {
     'deploymentType': fields.String(required=False),
     'inputs': fields.List(fields.Nested(o_input)),
     'outputs': fields.List(fields.Nested(o_output)),
+    'cost': fields.Integer(required=False),
     'config_values': fields.List(fields.Nested(o_config))
 })
 
