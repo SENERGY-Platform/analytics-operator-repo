@@ -164,6 +164,8 @@ class OperatorUpdate(Resource):
         """Get a operator."""
         o = operators.find_one({'_id': ObjectId(operator_id)})
         print(o)
+        if o is None:
+            return None, 404
         return o, 200
 
     @api.expect(operator_model)
