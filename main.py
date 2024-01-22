@@ -110,6 +110,7 @@ class Operator(Resource):
         parser.add_argument('limit', type=int, help='Limit', location='args')
         parser.add_argument('offset', type=int, help='Offset', location='args')
         parser.add_argument('sort', type=str, help='Sort', location='args')
+        parser.add_argument('for_user', type=str, help='Get results for another user (only admins)', location='args')
         args = parser.parse_args()
         limit = 0
         if not (args["limit"] is None):
