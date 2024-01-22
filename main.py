@@ -122,6 +122,10 @@ class Operator(Resource):
         else:
             sort = ["name", "asc"]
         user_id = getUserId(request)
+        if not (args["for_user"] is None):
+            roles = req.headers.get('X-User-Roles').split(', ')
+            if 'admin' in roles:
+                user_id = args["for_user"]
 
         if not (args["search"] is None):
             if len(args["search"]) > 0:
