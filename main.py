@@ -124,7 +124,7 @@ class Operator(Resource):
             sort = ["name", "asc"]
         user_id = getUserId(request)
         if not (args["for_user"] is None):
-            roles = req.headers.get('X-User-Roles').split(', ')
+            roles = request.headers.get('X-User-Roles').split(', ')
             if 'admin' in roles:
                 user_id = args["for_user"]
 
